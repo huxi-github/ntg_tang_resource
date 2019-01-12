@@ -1,0 +1,84 @@
+function [ output_args ] = Untitled1( input_args )
+%UNTITLED1 Summary of this function goes here
+%  Detailed explanation goes here
+clc;
+clear;
+figure(2);
+
+name1='filter\traffic_out.txt'
+name2='filter\cpu_out.txt'
+name4='filter\mem_out.txt'
+name3='filter\load_out.txt'
+
+
+start=1;
+subplot(2,2,1);
+%流量变化
+T1=load(name1);%文件名
+t1=T1(:);
+hold on;
+plot(t1,'r-','linewidth',1.5);
+ylabel('流量（B）','fontsize',12,'FontWeight','Bold');
+hold on;
+
+%cpu
+subplot(2,2,2);
+T2=load('name2');%文件名
+%Y=T(1:80,1);%启动时长
+%Len=length(Y);
+cpu1=T2(:);
+plot(cpu1,'b-','linewidth',1.5);
+hold on;
+ylabel('CPU利用率(%)','fontsize',12,'FontWeight','Bold');
+hold on;
+
+%内存
+subplot(2,2,3);
+T3=load('name3');%文件名
+t3=T3(:);
+
+hold on
+plot(t,'r-','linewidth',1.5);
+
+ylabel('Memory利用情况(MB)','fontsize',12,'FontWeight','Bold');
+hold on;
+
+
+
+
+
+
+T1=load('logs\load_m1.log');%文件名
+T2=load('logs\load_m5.log');%文件名
+T3=load('logs\load_m15.log');%文件名
+len = length(T1);
+%Y=0:1:6000;
+%Y=T(1,1);%启动时长
+plot(T1,'b-','linewidth',1.5);
+
+hold on
+plot(T2,'g-','linewidth',1.5);
+
+hold on
+plot(T3,'r-','linewidth',1.5);
+
+%axis([0,600, 0, 4]);
+%set(gca, 'XTick', [0 1 2 3]);
+%set(gca, 'XTickLabel', {'0', '1000','2000','3000', '4000', '5000','6000'});
+%title('用户数量','fontsize',12,'FontWeight','Bold');%标题
+%legend('Timer = 1分','Timer = 5分','Timer = 15分')
+%xlabel('用户数（个）','fontsize',12,'FontWeight','Bold');
+ylabel('CPU负载(个)','fontsize',12,'FontWeight','Bold');
+
+
+
+
+
+
+
+
+
+%%{
+subplot(2,2,4);
+
+%}
