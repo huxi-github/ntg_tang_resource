@@ -1,0 +1,119 @@
+clear;
+clc;
+figure(1);
+
+name1='4\logs\io1.log';
+name2='4\logs\io2.log';
+Y1=load(name1);%文件名
+Y2=load(name2);%文件名
+step=5;%越小越好
+subplot(1,2,1);
+T=load(name1);
+yy=T(1:10:23000,1);
+
+leg=size(yy);
+if leg(1,1) > leg(1,2)
+    N=leg(1,1);
+else
+    N=leg(1,2);
+end
+
+M=fix(N/step);
+rm=0;
+rm=zeros(1,M);%每个m的均值
+varrm=zeros(1,M);%每个m的方差
+time=0;
+for m=1:M
+    %m
+    ddd=0;
+    time=time+1;
+    for i=1:m:N-m+1
+        ddd=ddd+1;
+        rm(ddd)=1/m*sum(yy(i:(i+m-1)));
+        %ddd
+    end
+    varrm(m)=var(rm);
+    i0=1:m+1:N-m-1;
+    rm=zeros(size(i0));
+end
+vaar=var(yy); %方差
+clear leg
+p=0;
+uu=0;
+ww=0;
+p=polyfit(log10(1:M),log10(varrm(1:M)/(vaar)),1);%polyfit拟合函数，一次拟合
+uu=log10(1:M);%横坐标
+ww=uu*p(1,1)+p(1,2);%一次拟合曲线
+HH=1+p(1,1)/2;%hurts指数
+HH
+%figure
+plot(uu,log10(varrm(1:M)/(vaar)),'.',uu,-log10(1:M),'-',uu,ww,'-.');
+%plot(uu,log10(varrm(1:M)/(vaar)),'.',uu,ww,'r-');
+HH = strcat('H=',num2str(roundn(HH,-2)));%m1=1,m2=1带入求的值,roundn保留两位小数
+text(1.5,-0.5,HH,'fontsize',12,'FontWeight','Bold');%将H的值放置的位置（坐标轴中）为（2,2），可更改
+%title(strcat('H curve:',num2str(HH)))
+title('方差时间图','fontsize',12,'FontWeight','Bold');
+%clear rm varrm vaar
+xlabel('log(n)','fontsize',12,'FontWeight','Bold');
+ylabel('log(Var)','fontsize',12,'FontWeight','Bold');
+hold on;
+
+step=5;%越大越好
+subplot(1,2,2);
+yy=load(name1);
+yy=yy(1:15:23000,1);
+leg=size(yy);%行数和列数
+
+if leg(1,1) > leg(1,2)
+    N=leg(1,1);
+else
+    N=leg(1,2);
+end
+
+maxN=fix(N/step);%fix 朝0取整
+rs=zeros(1,N);%zeros 1 X N的全零矩阵
+minN=2;
+for n=minN:maxN
+    K=fix(N/n);%得到K段, n为步长
+    rsn=0;
+    for k=1:K
+        nb=(k-1)*n+1;%每小段的开始点
+        ne=k*n;%每小段的结束点
+        
+        %小段均值
+        ME=mean(yy(nb:ne));
+        
+        %计算累积误差
+        sum1=0;
+        temp_t=zeros(1,n);
+        for t=1:n
+            sum1=sum1+yy(nb+t-1);
+            temp_t(t)=sum1-ME*t;
+        end
+        temp_t(n+1)=0;
+        
+        %样本极差
+        ri=max(temp_t)-min(temp_t);
+        
+        %样本标准差
+        si=std(yy(nb:ne));
+        if(si > 0)
+            rsn=rsn+ri/si;%重整化范围累加
+        end
+    end
+    rs(n)=rsn/K;%重整化范围均值
+end
+
+x00=log10(minN:maxN);
+p1=polyfit(log10(minN:maxN),log10(rs(minN:maxN)),1);
+HH=p1(1,1);
+HH
+y00=p1(1,1)*x00+p1(1,2);%拟合曲线
+%figure
+plot(x00,log10(rs(minN:maxN)-0.5),'.',x00,y00,'r-');
+hold on;
+HH = strcat('H=',num2str(roundn(HH,-2)));%m1=1,m2=1带入求的值,roundn保留两位小数
+text(1.2,0.5,HH,'fontsize',12,'FontWeight','Bold');%将H的值放置的位置（坐标轴中）为（2,2），可更改
+title('R/S图','fontsize',12,'FontWeight','Bold');
+xlabel('log(n)','fontsize',12,'FontWeight','Bold');
+ylabel('log(RSm)','fontsize',12,'FontWeight','Bold');
